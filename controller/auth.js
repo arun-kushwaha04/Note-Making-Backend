@@ -10,21 +10,22 @@ exports.signUp = (req, res) => {
         //if error occured
         if (err) {
             console.log(`Error occured in searching users\n ${err}`);
-            res.status(500).send('Internal Server Error');
+            res.status(500).json({ message: 'Internal Server Error Please Try Again', });
         }
         //else move forward
         else {
             const userExists = data.rows.length;
             if (userExists !== 0) {
-                res.status(400).send('User already exists');
+                res.status(400).json({ message: 'User Already exists, Try To Login', });
             }
             //If user not exist then add user in database 
             else {
                 //creating hash password
+                console.log(req.body);
                 bcrypt.hash(password, 10, (err, hash) => {
                     if (err) {
                         console.log(`Error occured in hashing password\n ${err}`);
-                        res.status(500).send('Internal Error Please try again');
+                        res.status(500).json({ message: 'Internal Server Error Please Try Again', });
                     } else {
                         //creating token for each user
                         const token = jwt.sign({
@@ -37,11 +38,12 @@ exports.signUp = (req, res) => {
                         client.query(`INSERT INTO users (name, email, password) VALUES ('${name}', '${email}', '${hash}'); `, (err) => {
                             if (err) {
                                 console.log(`Error occured in adding users\n ${err}`);
-                                res.status(500).send('Internal Database Error Please Try Again');
+                                res.status(500).json({ message: 'Internal Server Error Please Try Again', });
                             } else {
                                 console.log('User added successfully');
                                 res.status(200).json({
-                                    message: 'User added successfully',
+                                    message: `Account Created Successfully`,
+                                    dashboardUrl: '/Pages/Dashboard/index.html',
                                     userToken: token,
                                 });
                             }
@@ -61,13 +63,13 @@ exports.login = (req, res) => {
         //if error occured
         if (err) {
             console.log(`Error occured in searching users\n ${err}`);
-            res.status(500).send('Internal Server Error');
+            res.status(500).json({ message: 'Internal Server Error Please Try Again', });
         }
         //else move forward
         else {
             const userExists = data.rows.length;
             if (userExists == 0) {
-                res.status(400).send('No User exists try registering yourself');
+                res.status(400).json({ message: 'No Such User Exists Try Registering Yourself', });;
             }
             //If user exist then check credentials
             else {
@@ -75,10 +77,10 @@ exports.login = (req, res) => {
                 bcrypt.compare(password, data.rows[0].password, (err, result) => {
                     if (err) {
                         console.log(`Error occured in comparing password\n ${err}`);
-                        res.status(500).send('Internal Error Please try again');
+                        res.status(500).json({ message: 'Internal Server Error Please Try Again', });
                     } else {
                         if (!result) {
-                            res.status(403).send('Incorrect User Credentials');
+                            res.status(401).json({ message: 'Invalid User Credentials', });
                         } else {
                             //creating token for user
                             const token = jwt.sign({
@@ -90,7 +92,7 @@ exports.login = (req, res) => {
                             //finally logging in the user
                             res.status(200).json({
                                 message: 'User Logged in successfully',
-                                dashboardUrl: '../../Note-Making-Frontend/Pages/Dashboard/index.html',
+                                dashboardUrl: '/Pages/Dashboard/index.html',
                                 userToken: token,
                             })
                         }

@@ -33,6 +33,7 @@ exports.getUserNotes = (req, res) => {
             });
             res.status(200).json({
                 message: "Note Reterived Successfully",
+                name: `${req.name}`,
                 notes: data,
             });
         }
