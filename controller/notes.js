@@ -40,6 +40,32 @@ exports.getUserNotes = (req, res) => {
     });
 }
 
+exports.getNoteWithId = (req, res) => {
+    client.query(`SELECT * FROM notes WHERE id = '${req.body.id}'`, (err, notes) => {
+        if (err) {
+            console.log(err.message);
+            res.status(500).json({
+                message: "Internal Server Error",
+            });
+        } else {
+            const data = notes.rows.map((note) => {
+                if (note.email == req.email) {
+                    return {
+                        id: note.id,
+                        noteHeading: note.noteheading,
+                        noteContent: note.notecontent,
+                    }
+                }
+            });
+            res.status(200).json({
+                message: "Note Reterived Successfully",
+                name: `${req.name}`,
+                notes: data,
+            });
+        }
+    });
+}
+
 exports.updateNote = (req, res) => {
     const id = req.body.id;
     const noteHeading = req.body.noteHeading;
