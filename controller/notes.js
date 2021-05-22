@@ -2,7 +2,7 @@ const client = require('../configs/db');
 
 exports.addNotes = (req, res) => {
     const { noteHeading, noteContent } = req.body;
-    client.query(`INSERT INTO notes (email, noteHeading ,noteContent) VALUES ('${req.email}', '{${noteHeading}}', '{${noteContent}}');`, (err) => {
+    client.query(`INSERT INTO notes (userId, email, noteHeading ,noteContent) VALUES (${req.userId}, '${req.email}', '{${noteHeading}}', '{${noteContent}}');`, (err) => {
         if (err) {
             console.log(err.message);
             res.status(500).json({
@@ -17,7 +17,7 @@ exports.addNotes = (req, res) => {
 }
 
 exports.getUserNotes = (req, res) => {
-    client.query(`SELECT * FROM notes WHERE email = '${req.email}'`, (err, notes) => {
+    client.query(`SELECT * FROM notes WHERE userId = '${req.userId}'`, (err, notes) => {
         if (err) {
             console.log(err.message);
             res.status(500).json({

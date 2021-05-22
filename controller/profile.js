@@ -23,6 +23,17 @@ exports.userData = (req, res) => {
 exports.updateEmail = (req, res) => {
     const userEmail = req.body.email;
     const userPassword = req.body.password;
+
+    client.query(`SELECT * FROM users WHERE email = '${userEmail}'`, (err, data) => {
+        if (err) {
+            res.status(500).json({ message: "Internal Server Error", });
+        } else {
+            if (data.rows.length != 0) {
+                res.status(400).json({ message: "Email Already Exists", });
+            }
+        }
+    })
+
     client.query(`SELECT * FROM users WHERE email = '${req.email}'`, (err, data) => {
         if (err) {
             res.status(500).json({ message: "Internal Server Error", });
@@ -44,8 +55,9 @@ exports.updateEmail = (req, res) => {
                             } else {
                                 req.email = userEmail;
                                 const token = jwt.sign({
-                                        name: data.name,
-                                        email: req.email,
+                                        userId: req.userId,
+                                        name: req.name,
+                                        email: req.body.email,
                                     },
                                     process.env.SECRET_KEY,
                                 );

@@ -28,12 +28,12 @@ exports.signUp = (req, res) => {
                         res.status(500).json({ message: 'Internal Server Error Please Try Again', });
                     } else {
                         //creating token for each user
-                        const token = jwt.sign({
-                                name: name,
-                                email: email,
-                            },
-                            process.env.SECRET_KEY,
-                        );
+                        // const token = jwt.sign({
+                        //         name: name,
+                        //         email: email,
+                        //     },
+                        //     process.env.SECRET_KEY,
+                        // );
                         //finally adding user to database
                         client.query(`INSERT INTO users (name, email, password) VALUES ('${name}', '${email}', '${hash}'); `, (err) => {
                             if (err) {
@@ -43,8 +43,6 @@ exports.signUp = (req, res) => {
                                 console.log('User added successfully');
                                 res.status(200).json({
                                     message: `Account Created Successfully`,
-                                    dashboardUrl: '/Pages/Dashboard/index.html',
-                                    userToken: token,
                                 });
                             }
                         });
@@ -84,6 +82,7 @@ exports.login = (req, res) => {
                         } else {
                             //creating token for user
                             const token = jwt.sign({
+                                    userId: data.rows[0].id,
                                     name: data.rows[0].name,
                                     email: email,
                                 },

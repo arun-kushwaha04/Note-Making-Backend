@@ -11,6 +11,7 @@ exports.verifyToken = (req, res, next) => {
                 message: "Invalid Token",
             })
         } else {
+            const userId = result.userId;
             const email = result.email;
             const name = result.name;
             client.query(`SELECT * FROM users WHERE email = '${email}';`, (err, data) => {
@@ -20,11 +21,13 @@ exports.verifyToken = (req, res, next) => {
                         message: "Internal server Error",
                     })
                 } else {
-                    if (data.rows.length === 0 || data.rows[0].name !== name) {
+                    if (data.rows.length === 0 || data.rows[0].name !== name || data.rows[0].id !== userId) {
+                        console.log("Inavalid Token");
                         res.status(400).json({
                             message: "Invalid Token",
                         })
                     } else {
+                        req.userId = userId;
                         req.name = name;
                         req.email = email;
                         next();
