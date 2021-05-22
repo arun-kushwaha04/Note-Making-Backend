@@ -3,10 +3,20 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 exports.userData = (req, res) => {
-    res.send(200).json({
+    let Email = "";
+    let flag = 0;
+    for (let i = 0; i < req.email.length; i++) {
+        if (i < 2) Email += req.email[i];
+        else if (req.email[i] === '@') {
+            Email += req.email[i];
+            flag = 1;
+        } else if (flag === 1) Email += req.email[i];
+        else Email += '*';
+    }
+    res.status(200).json({
         message: "User Data Reterived Successfully",
         name: req.name,
-        email: req.email,
+        email: Email,
     });
 }
 
@@ -17,16 +27,19 @@ exports.updateEmail = (req, res) => {
         if (err) {
             res.status(500).json({ message: "Internal Server Error", });
         } else {
-            const hashPassword = data.password;
+            const hashPassword = data.rows[0].password;
             bcrypt.compare(userPassword, hashPassword, (err, result) => {
                 if (err) {
+                    console.log(err);
                     res.status(500).json({ message: "Internal Server Error", });
                 } else {
                     if (!result) {
+                        console.log("Incorrect Pass");
                         res.status(400).json({ message: "Invalid password", });
                     } else {
                         client.query(`UPDATE users SET email='${userEmail}' WHERE email='${req.email}'`, err => {
                             if (err) {
+                                console.log(err);
                                 res.status(500).json({ message: "Internal Server Error", });
                             } else {
                                 req.email = userEmail;
