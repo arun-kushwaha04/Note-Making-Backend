@@ -27,14 +27,6 @@ exports.signUp = (req, res) => {
                         console.log(`Error occured in hashing password\n ${err}`);
                         res.status(500).json({ message: 'Internal Server Error Please Try Again', });
                     } else {
-                        //creating token for each user
-                        // const token = jwt.sign({
-                        //         name: name,
-                        //         email: email,
-                        //     },
-                        //     process.env.SECRET_KEY,
-                        // );
-                        //finally adding user to database
                         client.query(`INSERT INTO users (name, email, password) VALUES ('${name}', '${email}', '${hash}'); `, (err) => {
                             if (err) {
                                 console.log(`Error occured in adding users\n ${err}`);
@@ -78,7 +70,7 @@ exports.login = (req, res) => {
                         res.status(500).json({ message: 'Internal Server Error Please Try Again', });
                     } else {
                         if (!result) {
-                            res.status(401).json({ message: 'Invalid User Credentials', });
+                            res.status(401).json({ message: 'Invalid Password', });
                         } else {
                             //creating token for user
                             const token = jwt.sign({

@@ -46,7 +46,7 @@ exports.updateEmail = (req, res) => {
                 } else {
                     if (!result) {
                         console.log("Incorrect Pass");
-                        res.status(400).json({ message: "Invalid password", });
+                        res.status(400).json({ message: "Invalid Password", });
                     } else {
                         client.query(`UPDATE users SET email='${userEmail}' WHERE email='${req.email}'`, err => {
                             if (err) {
@@ -81,13 +81,13 @@ exports.updateName = (req, res) => {
         if (err) {
             res.status(500).json({ message: "Internal Server Error", });
         } else {
-            const hashPassword = data.password;
+            const hashPassword = data.rows[0].password;
             bcrypt.compare(userPassword, hashPassword, (err, result) => {
                 if (err) {
                     res.status(500).json({ message: "Internal Server Error", });
                 } else {
                     if (!result) {
-                        res.status(400).json({ message: "Invalid password", });
+                        res.status(400).json({ message: "Invalid Password", });
                     } else {
                         client.query(`UPDATE users SET name='${userName}' WHERE email='${req.email}'`, err => {
                             if (err) {
@@ -95,8 +95,9 @@ exports.updateName = (req, res) => {
                             } else {
                                 req.name = userName;
                                 const token = jwt.sign({
+                                        userId: req.userId,
                                         name: userName,
-                                        email: data.email,
+                                        email: req.email,
                                     },
                                     process.env.SECRET_KEY,
                                 );
@@ -120,7 +121,7 @@ exports.updatePassword = (req, res) => {
         if (err) {
             res.status(500).json({ message: "Internal Server Error", });
         } else {
-            const hashPassword = data.password;
+            const hashPassword = data.rows[0].password;
             bcrypt.compare(userPassword, hashPassword, (err, result) => {
                 if (err) {
                     res.status(500).json({ message: "Internal Server Error", });
