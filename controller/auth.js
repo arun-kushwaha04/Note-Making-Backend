@@ -93,3 +93,78 @@ exports.login = (req, res) => {
         }
     });
 };
+
+
+exports.forgotPassword = (req, res) => {
+    const { email } = req.body;
+    //checking if a user already exist with given email id
+    client.query(`SELECT * FROM users WHERE email = '${email}'`, (err, data) => {
+        //if error occured
+        if (err) {
+            console.log(`Error occured in searching users\n ${err}`);
+            res.status(500).json({ message: 'Internal Server Error Please Try Again', });
+        }
+        //else move forward
+        else {
+            const userExists = data.rows.length;
+            if (userExists == 0) {
+                res.status(400).json({ message: 'No Such User Exists Try Registering Yourself', });;
+            } else {
+                const token = jwt.sign({
+                        userId: data.rows[0].id,
+                        name: data.rows[0].name,
+                        email: email,
+                    },
+                    process.env.SECRET_KEY, { expiresIn: '1m' }
+                );
+                res.status(200).json({
+                    message: 'Reset Password Has Been Email Sent',
+                    userToken: token,
+                    domain: process.env.domain,
+                    key: process.env.key,
+                })
+            }
+        }
+    });
+};
+
+
+exports.resetPassword = (req, res) => {
+    const password = req.body.password;
+    //checking if a user already exist with given email id
+    client.query(`SELECT * FROM users WHERE email = '${req.email}'`, (err, data) => {
+        //if error occured
+        if (err) {
+            console.log(`Error occured in searching users\n ${err}`);
+            res.status(500).json({ message: 'Internal Server Error Please Try Again', });
+        }
+        //else move forward
+        else {
+            const userExists = data.rows.length;
+            if (userExists == 0) {
+                res.status(400).json({ message: 'No Such User Exists Try Registering Yourself', });;
+            }
+            //If user exist then check credentials
+            else {
+                bcrypt.hash(password, 10, (err, hash) => {
+                    if (err) {
+                        console.log(`Error occured in hashing password\n ${err}`);
+                        res.status(500).json({ message: 'Internal Server Error Please Try Again', });
+                    } else {
+                        client.query(`UPDATE users SET password='${hash}' WHERE email='${req.email}'`, err => {
+                            if (err) {
+                                res.status(500).json({ message: "Internal Server Error", });
+                            } else {
+                                res.status(200).json({
+                                    message: "Password Updated successfully",
+                                });
+                            }
+                        });
+                    }
+                })
+
+
+            }
+        }
+    });
+};
