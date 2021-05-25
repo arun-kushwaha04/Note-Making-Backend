@@ -115,6 +115,8 @@ exports.login = (req, res) => {
                                 message: 'User Logged in successfully',
                                 dashboardUrl: '/Pages/Dashboard/index.html',
                                 userToken: token,
+                                // "Access-Control-Allow-Origin": "https://evening-earth-85816.herokuapp.com/auth/login",
+                                // "Access-Control-Allow-Credentials": true,
                             })
                         }
                     }
