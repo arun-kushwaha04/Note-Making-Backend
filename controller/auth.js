@@ -58,8 +58,8 @@ exports.signUp = (req, res) => {
                                             res.status(200).json({
                                                 message: `Accounting Creation Pending, Verify Email to Complete Account Creation Process.`,
                                                 userToken: token,
-                                                domain: process.env.domain,
-                                                key: process.env.key,
+                                                domain: process.env.DOMAIN,
+                                                key: process.env.KEY,
                                             });
                                         }
                                     });
@@ -150,8 +150,8 @@ exports.forgotPassword = (req, res) => {
                 res.status(200).json({
                     message: 'Reset Password Has Been Email Sent',
                     userToken: token,
-                    domain: process.env.domain,
-                    key: process.env.key,
+                    domain: process.env.DOMAIN,
+                    key: process.env.KEY,
                 })
             }
         }
