@@ -111,13 +111,10 @@ exports.login = (req, res) => {
                                 process.env.SECRET_KEY,
                             );
                             //finally logging in the user
-                            console.log(res.header);
                             res.status(200).json({
                                 message: 'User Logged in successfully',
                                 dashboardUrl: '/Pages/Dashboard/index.html',
                                 userToken: token,
-                                // "Access-Control-Allow-Origin": "https://evening-earth-85816.herokuapp.com/auth/login",
-                                // "Access-Control-Allow-Credentials": true,
                             })
                         }
                     }
