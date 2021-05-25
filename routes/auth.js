@@ -5,7 +5,7 @@ const { requestOrigin } = require('../middlewares/requestOrigin');
 const router = express.Router();
 
 router.post('/signUp', signUp); //register users
-router.post('/login', requestOrigin, login); //verifying users
+router.post('/login', login); //verifying users
 router.post('/forgotPassword', forgotPassword);
 router.post('/resetPassword', verifyToken, resetPassword);
 router.post('/verifyEmail', verifyEmail);
